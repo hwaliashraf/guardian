@@ -1,9 +1,23 @@
 SCRATCH.md
+last_ticket.md
 node_modules/
 dist/
 build/
-venv/
-.venv/
-__pycache__/
-.DS_Store
+
+# secrets / local env
 .env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# OS / editor
+.DS_Store
+
+# native build output (not produced yet in this environment, added preemptively)
+app/android/.gradle/
+app/android/app/build/
+app/android/build/
+app/ios/Pods/
+app/ios/*.xcworkspace/
+*.xcuserstate

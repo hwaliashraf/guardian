@@ -1,6 +1,9 @@
 name: Guardian CI
 
-# T29: lint/typecheck/test for the parental-app (Guardian) project.
+# T29: lint/typecheck/test across the npm workspaces. Adapted here for the standalone `guardian`
+# repo (no path-filtering/working-directory scoping needed — this repo's root IS the project
+# root; the original version of this workflow lived inside a larger life-os monorepo and had to
+# account for that).
 #
 # Scope note (deliberate, not an oversight): this workflow does NOT build the native Android
 # (Kotlin/Gradle) or iOS (Swift/Xcode) code T22-T27 wrote. Doing so would need a JDK + Android
@@ -24,6 +27,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -33,6 +37,17 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      # BUG-001: app/.env is (correctly) gitignored, so it doesn't exist on a fresh checkout.
+      # app/src/supabaseClient.ts imports SUPABASE_URL/SUPABASE_ANON_KEY from `@env`, resolved
+      # at babel-transform time by react-native-dotenv — without a real .env file this is a hard
+      # parse error, not a graceful `undefined`, so every app/ test suite that transitively
+      # imports the Supabase client fails to even transform. The placeholder values in
+      # app/.env.example are sufficient here: no test in this suite makes a real Supabase call
+      # (packages/backend's tests are pure decision logic; app/'s screen tests mock their data
+      # hooks) — this file only needs to exist and parse, not point at a real project.
+      - name: Create app/.env for CI
+        run: cp app/.env.example app/.env
 
       - name: Test
         run: npm test --workspaces --if-present

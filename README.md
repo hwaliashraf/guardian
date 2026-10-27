@@ -108,8 +108,7 @@ To build/run the native Android or iOS apps, or to wire up push notifications, m
 model, or the Apple FamilyControls entitlement — **see [`SETUP.md`](./SETUP.md)**, which has a
 dedicated, step-by-step section for each of these (none of them are needed for the commands
 above). CI runs the same lint/typecheck/test commands on every push — see
-`../../.github/workflows/ci.yml` at the repo root (this project lives inside a larger monorepo;
-GitHub Actions requires workflows at the true repo root, not this directory).
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
 
 ## 4. Assumptions
 

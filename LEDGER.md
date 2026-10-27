@@ -2525,3 +2525,23 @@ now included in the smoke script's verified-output description.
 - **Repo-config note (reproduced, not touched)**: every new file this ticket added is untracked
   *and* gitignored, same root-`.gitignore`-`projects`-line issue every ticket since T09 has hit.
 
+
+### BUG-001 — CI `Test` step fails: `app/.env` missing on fresh checkout
+
+- **First real CI run after the `guardian` repo was pushed standalone**: `Guardian CI` failed at
+  the `Test` step (Install/Lint/Typecheck all passed). Root cause: `app/.env` is (correctly)
+  gitignored, so a fresh checkout never has it; `app/src/supabaseClient.ts` imports `@env`
+  values `react-native-dotenv` resolves from that file at babel-transform time — missing it is a
+  hard parse error, not a graceful `undefined`, so 20 of 22 `app` test suites failed to
+  transform at all. Confirmed by reproduction (fresh clone, `npm ci`, the exact CI test command)
+  before touching anything.
+- **Fix**: added a `Create app/.env for CI` step to `.github/workflows/ci.yml`
+  (`cp app/.env.example app/.env`), positioned after `Typecheck` and before `Test`. Placeholder
+  values are sufficient — no test in this suite makes a real Supabase call (`packages/backend`'s
+  tests are pure decision logic; `app/`'s screen tests mock their data hooks).
+- **Verified**: re-cloned the fixed commit into a fresh, isolated directory and replicated the
+  full CI step sequence in order — `npm ci` → `Lint` → `Typecheck` → `Create app/.env for CI` →
+  `Test` — all green, exact match to the known-good baseline (backend 82/82, domain 169/169, app
+  92/92). One-file diff (`.github/workflows/ci.yml`, ~11 lines) — below the stakes-review
+  threshold, no reviewer spawned.
+- Full writeup: `bug-tickets/BUG-001-ci-test-fails-missing-env.md`.
