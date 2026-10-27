@@ -1,0 +1,11 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# T08: local --env-file for edge function secrets (e.g. FCM_SERVICE_ACCOUNT_JSON) — never commit.
+.env

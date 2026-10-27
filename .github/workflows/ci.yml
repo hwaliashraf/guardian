@@ -1,0 +1,38 @@
+name: Guardian CI
+
+# T29: lint/typecheck/test for the parental-app (Guardian) project.
+#
+# Scope note (deliberate, not an oversight): this workflow does NOT build the native Android
+# (Kotlin/Gradle) or iOS (Swift/Xcode) code T22-T27 wrote. Doing so would need a JDK + Android
+# SDK install (Android) or a macOS runner + Xcode + CocoaPods (iOS) — real, but nontrivial,
+# additional CI setup this ticket does not build; see SETUP.md's "Java / Android SDK" and
+# "Xcode / CocoaPods" sections for the manual steps a human runs locally instead. This workflow
+# only runs what a bare Ubuntu runner with Node can verify: workspace lint/typecheck/test.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  lint-typecheck-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test --workspaces --if-present

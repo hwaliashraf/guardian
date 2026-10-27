@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Shared with the main app target's own entitlements file — lets the host app write
+	     contentBlockerRules.json into a container this extension can also read, since the
+	     extension itself cannot fetch/generate the rules (no network I/O). Requires an Apple
+	     Developer account/App Groups capability (T27) before this is a real, provisionable
+	     entitlement — see SETUP.md. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.guardian.app</string>
+	</array>
+</dict>
+</plist>

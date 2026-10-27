@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- T24: Device Admin policy set (spec §3.7). force-lock is the traditionally associated policy
+     for DevicePolicyManager.lockNow() (GuardianDeviceAdminReceiver.lockNow()); limit-password is
+     a conservative starter addition consistent with a parental-control app's uninstall-protection
+     intent. Kept minimal — no wipe/camera-disable/encryption policies, which this ticket does not
+     use and would only broaden the consent-screen warning shown to the user unnecessarily. -->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <limit-password />
+        <force-lock />
+    </uses-policies>
+</device-admin>

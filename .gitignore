@@ -1,0 +1,9 @@
+SCRATCH.md
+node_modules/
+dist/
+build/
+venv/
+.venv/
+__pycache__/
+.DS_Store
+.env

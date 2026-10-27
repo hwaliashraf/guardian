@@ -1,0 +1,26 @@
+{
+  "name": "guardian",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "app"
+  ],
+  "scripts": {
+    "prepare": "npm run build -w packages/domain",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/jest": "^30.0.0",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.4.2",
+    "prettier": "^3.9.5",
+    "ts-jest": "^29.4.11",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.63.0"
+  }
+}

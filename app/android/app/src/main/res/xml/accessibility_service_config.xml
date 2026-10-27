@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- T23: Layer-3 AccessibilityService config (spec §4). Deliberately no android:packageNames
+     scoping — spec §4's ad-keyword scan must see "third-party apps" generically, and the YouTube
+     capture also needs the YouTube package specifically; scoping to a fixed list would defeat the
+     ad-keyword feature's whole purpose. A deployment concerned about scan overhead/battery could
+     revisit this. Explicit event-type list (not typeAllMask) to skip event types this service has
+     no use for. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled|typeViewClicked|typeViewFocused|typeViewTextChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="100"
+    android:description="@string/accessibility_service_description" />

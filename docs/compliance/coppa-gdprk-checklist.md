@@ -1,0 +1,19 @@
+# COPPA / GDPR-K Coverage Checklist — DRAFT
+
+> **This is a draft coverage map, not a legal compliance certification.** It exists so a human
+> reviewer can audit what's implemented without re-reading every ticket's full text — it is not
+> a substitute for actual legal review of whether the implementation is *sufficient* for
+> COPPA/GDPR-K, only a pointer to *where* each requirement is addressed in code today.
+
+_Last generated: 2026-07-28 (T28)._
+
+| Requirement | Implemented in | Where to look | Status |
+|---|---|---|---|
+| Verified parental consent before any child data is collected | T10 | `packages/backend/supabase/functions/auth-flows/index.ts` (signup handler rejects `consentAccepted !== true` before creating any row); `parental_consent_accepted_at` column, migration `0005_pairing.sql` | Implemented — consent-flag enforcement verified end-to-end (0 rows created on rejection). Human-facing verification *method* (how you confirm the consenter is really the parent) is still a `[PLACEHOLDER]` in `privacy-policy-draft.md` — needs a product/legal decision. |
+| Child data deletion on account close | T10 | `DELETE /family` handler; RLS `family_delete` policy, migration `0005_pairing.sql` | Implemented — cascade delete verified (family/parent/child/device/pairing_code rows all drop to 0, reviewer-confirmed with a live test). **Gap**: the `auth.users` login record itself is not deleted by the cascade — flagged in `privacy-policy-draft.md`, needs a fix or a documented separate deletion request process before publishing that policy. |
+| Data minimization — camera/presence detection | T25 + this doc | `app/android/app/src/main/kotlin/com/guardian/presence/FaceWindow.kt`/`CameraPresenceService.kt` (boolean-only, no frame persistence, reviewer-verified); `privacy-policy-draft.md`'s dedicated camera section | Implemented and documented in plain language, per spec §6's explicit ask. |
+| Data minimization — NSFW image classification | T25 | `app/android/app/src/main/kotlin/com/guardian/nsfw/NsfwClassifier.kt` (on-device TFLite, classification result only, no image persistence/upload) | Implemented — no `.tflite` model binary ships in this repo yet (T25's documented gap; sourcing the model is a separate human action, does not affect this privacy claim once sourced). |
+| No message-content monitoring | Product scope (Phase-0 decision, LEDGER.md) | Spec explicitly defers social-media/messaging conversation monitoring to v2; no such feature exists in this codebase | Out of scope by design, not a gap. |
+| Prominent disclosure before Accessibility/VpnService/Device Admin/Camera use | T22–T25 (markers) + T28 | `AndroidManifest.xml`'s `// see T28` comments (T22 VpnService, T23 Accessibility, T24 Device Admin, T25 Camera); copy drafted in `play-store-disclosure.md`; rendered in-app by `app/src/child/onboarding/PermissionsDisclosureScreen.tsx` | Disclosure copy + screen implemented (this ticket). **Not yet wired to a real permission-request flow** — no ticket has built the actual JS→native permission-request call sites yet (`PairDeviceScreen.tsx` is still T11's stub); the screen exists and is registered on `ChildNavigator` but isn't reachable from a built end-to-end onboarding flow yet. Flagged as a RISK for whichever future ticket builds that flow. |
+| Age-appropriate content-filter defaults | T02/T15 | `packages/domain/src/ageTier.ts` (`deriveAgeTier`), `packages/domain/src/contentCategories.ts` (`getAgeBasedPreset`) | Implemented and tested. |
+| Apple FamilyControls entitlement (parental-control-specific platform requirement) | T27 (code) + T28 (application content) | `app/ios/Guardian/ScreenTime/`; `apple-entitlement-application-draft.md` | Code-ready; entitlement application submission is a human action outside any ticket (see that doc's checklist). |
